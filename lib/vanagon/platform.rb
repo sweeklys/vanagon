@@ -257,7 +257,7 @@ class Vanagon
       @copy ||= "cp"
       @shasum ||= "sha1sum"
 
-      @use_docker_exec = false
+      @use_docker_exec = true
 
       # Our first attempt at defining metadata about a platform
       @cross_compiled ||= false

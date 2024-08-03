@@ -25,12 +25,12 @@ describe Vanagon::Engine::Docker do
     plat._platform
   end
 
-  let(:platform_with_docker_exec) do
+  let(:platform_use_docker_exec_false) do
     plat = Vanagon::Platform::DSL.new('debian-10-amd64')
     plat.instance_eval(<<~EOF)
       platform 'debian-10-amd64' do |plat|
         plat.docker_image 'debian:10-slim'
-        plat.use_docker_exec true
+        plat.use_docker_exec false
       end
     EOF
     plat._platform
@@ -62,8 +62,8 @@ describe Vanagon::Engine::Docker do
   end
 
   describe '#dispatch' do
-    context 'when platform has use_docker_exec set' do
-      subject { described_class.new(platform_with_docker_exec) }
+    context 'when platform does not set use_docker_exec' do
+      subject { described_class.new(platform_with_docker_image) }
 
       it 'uses docker exec' do
         expect(Vanagon::Utilities).to receive(:remote_ssh_command).never
@@ -72,11 +72,22 @@ describe Vanagon::Engine::Docker do
         subject.dispatch('true', true)
       end
     end
+
+    context 'when platform set use_docker_exec false' do
+      subject { described_class.new(platform_use_docker_exec_false) }
+
+      it 'uses docker exec' do
+        expect(Vanagon::Utilities).to receive(:remote_ssh_command).once
+        expect(subject).to receive(:docker_exec).never
+
+        subject.dispatch('true', true)
+      end
+    end
   end
 
   describe '#ship_workdir' do
-    context 'when platform has use_docker_exec set' do
-      subject { described_class.new(platform_with_docker_exec) }
+    context 'when platform does not set use_docker_exec' do
+      subject { described_class.new(platform_with_docker_image) }
 
       it 'uses docker cp' do
         expect(Vanagon::Utilities).to receive(:rsync_to).never
@@ -85,11 +96,22 @@ describe Vanagon::Engine::Docker do
         subject.ship_workdir('foo/')
       end
     end
+
+    context 'when platform set use_docker_exec false' do
+      subject { described_class.new(platform_use_docker_exec_false) }
+
+      it 'uses docker cp' do
+        expect(Vanagon::Utilities).to receive(:rsync_to).once
+        expect(subject).to receive(:docker_cp_globs_to).never
+
+        subject.ship_workdir('foo/')
+      end
+    end
   end
 
   describe '#retrieve_built_artifact' do
-    context 'when platform has use_docker_exec set' do
-      subject { described_class.new(platform_with_docker_exec) }
+    context 'when platform does not set use_docker_exec' do
+      subject { described_class.new(platform_with_docker_image) }
 
       before(:each) do
         allow(FileUtils).to receive(:mkdir_p)
@@ -102,11 +124,26 @@ describe Vanagon::Engine::Docker do
         subject.retrieve_built_artifact('output/*', false)
       end
     end
+
+    context 'when platform set use_docker_exec false' do
+      subject { described_class.new(platform_use_docker_exec_false) }
+
+      before(:each) do
+        allow(FileUtils).to receive(:mkdir_p)
+      end
+
+      it 'uses docker cp' do
+        expect(Vanagon::Utilities).to receive(:rsync_from).twice
+        expect(subject).to receive(:docker_cp_globs_from).never
+
+        subject.retrieve_built_artifact(['output'], false)
+      end
+    end
   end
 
   describe '#select_target' do
-    context 'when platform has use_docker_exec set' do
-      subject { described_class.new(platform_with_docker_exec) }
+    context 'when platform with only docker image' do
+      subject { described_class.new(platform_with_docker_image) }
 
       it 'starts a new docker instance' do
         expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --name debian_10-slim-builder   debian:10-slim tail -f /dev/null")
