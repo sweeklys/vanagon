@@ -146,7 +146,7 @@ describe Vanagon::Engine::Docker do
       subject { described_class.new(platform_with_docker_image) }
 
       it 'starts a new docker instance' do
-        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --name debian_10-slim-builder   debian:10-slim tail -f /dev/null")
+        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --label vanagon=build --name debian_10-slim-builder   debian:10-slim tail -f /dev/null")
 
         subject.select_target
       end

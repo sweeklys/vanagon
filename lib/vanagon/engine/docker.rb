@@ -38,16 +38,22 @@ class Vanagon
       # This method is used to obtain a vm to build upon using
       # a docker container.
       # @raise [Vanagon::Error] if a target cannot be obtained
-      def select_target
+      def select_target # rubocop:disable Metrics/AbcSize
         ssh_args = @platform.use_docker_exec ? '' : "-p #{@target_port}:22"
         extra_args = @platform.docker_run_args.nil? ? [] : @platform.docker_run_args
 
-        Vanagon::Utilities.ex("#{@docker_cmd} run -d --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image} #{@platform.docker_run_command}")
-        @target = URI.parse('localhost')
+        Vanagon::Utilities.ex("#{@docker_cmd} run -d --label vanagon=build --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image} #{@platform.docker_run_command}")
 
         wait_for_ssh unless @platform.use_docker_exec
       rescue StandardError => e
-        raise Vanagon::Error.wrap(e, "Something went wrong getting a target vm to build on using Docker.")
+        begin
+          raise e unless JSON.parse(Vanagon::Utilities.ex("#{@docker_cmd} container inspect #{build_host_name}-builder"))[0].dig('Config', 'Labels', 'vanagon') == 'build'
+          VanagonLogger.warn "reusing existing container!"
+        rescue StandardError
+          raise Vanagon::Error.wrap(e, "Something went wrong getting a target vm to build on using Docker.")
+        end
+      ensure
+        @target = URI.parse('localhost')
       end
 
       # This method is used to tell the vmpooler to delete the instance of the
