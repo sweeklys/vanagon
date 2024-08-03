@@ -7,4 +7,5 @@ platform "el-9-aarch64" do |plat|
   plat.provision_with "dnf install -y --allowerasing #{packages.join(' ')}"
   plat.install_build_dependencies_with "dnf install -y --allowerasing "
   plat.vmpooler_template "redhat-9-arm64"
+  plat.docker_image "redhat/ubi9:latest"
 end

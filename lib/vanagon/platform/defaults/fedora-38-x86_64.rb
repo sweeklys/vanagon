@@ -14,4 +14,5 @@ platform 'fedora-38-x86_64' do |plat|
 
   plat.install_build_dependencies_with '/usr/bin/dnf install -y --best --allowerasing'
   plat.vmpooler_template 'fedora-38-x86_64'
+  plat.docker_image "fedora:38"
 end
