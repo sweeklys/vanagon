@@ -120,6 +120,7 @@ class Vanagon
     # Docker engine specific
     attr_accessor :docker_image
     attr_accessor :docker_run_args
+    attr_accessor :docker_run_command
     attr_accessor :use_docker_exec
 
     # AWS engine specific

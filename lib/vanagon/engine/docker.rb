@@ -11,7 +11,10 @@ class Vanagon
 
         @docker_cmd = Vanagon::Utilities.find_program_on_path('docker')
         @required_attributes << "docker_image"
-        @required_attributes.delete('ssh_port') if @platform.use_docker_exec
+        if @platform.use_docker_exec
+          @required_attributes.delete('ssh_port')
+          @platform.docker_run_command = 'tail -f /dev/null' if @platform.docker_run_command.nil?
+        end
       end
 
       # Get the engine name
@@ -39,7 +42,7 @@ class Vanagon
         ssh_args = @platform.use_docker_exec ? '' : "-p #{@target_port}:22"
         extra_args = @platform.docker_run_args.nil? ? [] : @platform.docker_run_args
 
-        Vanagon::Utilities.ex("#{@docker_cmd} run -d --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image}")
+        Vanagon::Utilities.ex("#{@docker_cmd} run -d --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image} #{@platform.docker_run_command}")
         @target = URI.parse('localhost')
 
         wait_for_ssh unless @platform.use_docker_exec
