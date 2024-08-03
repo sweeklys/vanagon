@@ -255,12 +255,13 @@ class Vanagon
     #
     # @param command [String] command to run locally
     # @param return_command_output [Boolean] whether or not command output should be returned
+    # @param log [Boolean] whether or not to log executed command
     # @return [true, String] Returns true if the command was successful or the
     #                        output of the command if return_command_output is true
     # @raise [RuntimeError] If the command fails an exception is raised
-    def local_command(command, return_command_output: false)
+    def local_command(command, return_command_output: false, log: true)
       clean_environment do
-        VanagonLogger.info "Executing '#{command}' locally"
+        VanagonLogger.info "Executing '#{command}' locally" if log
         if return_command_output
           ret = %x(#{command}).chomp
           if $CHILD_STATUS.success?

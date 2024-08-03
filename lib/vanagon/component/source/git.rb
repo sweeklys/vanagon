@@ -39,7 +39,7 @@ class Vanagon
               #
               # Work around it by calling 'git ls-remote' directly ourselves.
               Timeout.timeout(timeout) do
-                Vanagon::Utilities.local_command("git ls-remote --heads #{url} > /dev/null 2>&1")
+                Vanagon::Utilities.local_command("git ls-remote --heads #{url} > /dev/null 2>&1", log: false)
                 $?.exitstatus.zero?
               end
             rescue RuntimeError
