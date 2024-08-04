@@ -16,7 +16,10 @@ class Vanagon
 
           -p, --preserve [RULE]            Rule for VM preservation: never, on-failure, always
                                              [Default: on-failure]
-          -w, --workdir DIRECTORY          Working directory on the local host
+          -w, --workdir DIRECTORY          Working directory on the local host,
+                                             managed automatically based on `keepwork` option
+          -k, --keepwork RULE              Rule for preserving local `workdir`: [Default: never]
+                                             always, on-success, on-failure, never
           -v, --verbose                    Only here for backwards compatibility. Does nothing.
 
         Engines:
@@ -53,6 +56,7 @@ class Vanagon
           '--configdir' => :configdir,
           '--engine' => :engine,
           '--preserve' => :preserve,
+          '--keepwork' => :keepwork,
           '<project-name>' => :project_name,
           '<platforms>' => :platforms
         }
@@ -66,6 +70,13 @@ class Vanagon
           raise InvalidArgument, "--preserve option can only be one of: #{valid_preserves.join(', ')}"
         end
         options[:preserve] = options[:preserve].to_sym
+
+        valid_keepwork = %w[always on-success on-failure never]
+        unless valid_keepwork.include? options[:keepwork]
+          raise InvalidArgument, "--keepwork option can only be one of: #{valid_keepwork.join(', ')}"
+        end
+        options[:keepwork] = options[:keepwork].to_sym
+
         return options
       end
     end

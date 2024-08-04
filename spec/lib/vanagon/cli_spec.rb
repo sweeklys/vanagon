@@ -20,7 +20,8 @@ describe Vanagon::CLI do
   end
 
   describe "options that only allow limited values" do
-    [[:preserve, ["always", "never", "on-failure"]]].each do |option, values|
+    [[:keepwork, ["always", "never", "on-failure", "on-success"]],
+      [:preserve, ["always", "never", "on-failure"]]].each do |option, values|
       values.each do |value|
         it "can create a parser that accepts \"--#{option} #{value}\"" do
           subject = described_class.new
@@ -29,7 +30,7 @@ describe Vanagon::CLI do
         end
       end
     end
-    [[:preserve, ["bad-argument"]]].each do |option, values|
+    [[:keepwork, ["bad-argument"]], [:preserve, ["bad-argument"]]].each do |option, values|
       values.each do |value|
         it "rejects the bad argument \"--#{option} #{value}\"" do
           subject = described_class.new
@@ -41,6 +42,10 @@ describe Vanagon::CLI do
     it "preserve defaults to :on-failure" do
       subject = described_class.new
       expect(subject.parse(%W[build hello project platform])).to include(:preserve => :'on-failure')
+    end
+    it "keepwork defaults to :never" do
+      subject = described_class.new
+      expect(subject.parse(%W[build hello project platform])).to include(:keepwork => :never)
     end
   end
 
