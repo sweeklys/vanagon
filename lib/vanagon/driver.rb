@@ -90,6 +90,7 @@ class Vanagon
     end
 
     def cleanup_workdir
+      VanagonLogger.info "cleanup workdir"
       FileUtils.rm_rf(workdir)
     end
 

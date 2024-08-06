@@ -59,7 +59,9 @@ class Vanagon
       # This method is used to tell the vmpooler to delete the instance of the
       # vm that was being used so the pool can be replenished.
       def teardown
+        Vanagon::Driver.logger.info "Stopping #{build_host_name}-builder."
         Vanagon::Utilities.ex("#{@docker_cmd} stop #{build_host_name}-builder")
+        Vanagon::Driver.logger.info "Removing #{build_host_name}-builder."
         Vanagon::Utilities.ex("#{@docker_cmd} rm #{build_host_name}-builder")
       rescue Vanagon::Error => e
         VanagonLogger.error "There was a problem tearing down the docker container #{build_host_name}-builder (#{e.message})."
