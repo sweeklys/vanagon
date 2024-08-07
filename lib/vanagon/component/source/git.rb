@@ -113,7 +113,12 @@ class Vanagon
         # and check out the ref. Also sets the version if there is a git tag as
         # a side effect.
         def fetch
-          clone!
+          begin
+            @clone ||= ::Git.open(File.join(workdir, dirname))
+            @clone.fetch
+          rescue ::Git::GitExecuteError, ArgumentError
+            clone!
+          end
           checkout!
           version
           update_submodules
