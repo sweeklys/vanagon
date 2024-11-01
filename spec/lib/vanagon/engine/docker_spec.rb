@@ -11,6 +11,8 @@ describe Vanagon::Engine::Docker do
     plat.instance_eval(<<~EOF)
       platform 'debian-10-amd64' do |plat|
         plat.docker_image 'debian:10-slim'
+        plat.docker_arch 'linux/amd64'
+        plat.docker_registry 'myregistry.io'
       end
     EOF
     plat._platform
@@ -25,11 +27,22 @@ describe Vanagon::Engine::Docker do
     plat._platform
   end
 
+  let (:platform_without_docker_arch) do
+    plat = Vanagon::Platform::DSL.new('debian-10-amd64')
+    plat.instance_eval(<<~EOF)
+      platform 'debian-10-amd64' do |plat|
+        plat.docker_image 'debian:10-slim'
+      end
+    EOF
+    plat._platform
+  end
+
   let(:platform_use_docker_exec_false) do
     plat = Vanagon::Platform::DSL.new('debian-10-amd64')
     plat.instance_eval(<<~EOF)
       platform 'debian-10-amd64' do |plat|
         plat.docker_image 'debian:10-slim'
+        plat.docker_arch 'linux/amd64'
         plat.use_docker_exec false
       end
     EOF
@@ -50,6 +63,7 @@ describe Vanagon::Engine::Docker do
   describe "#validate_platform" do
     it 'raises an error if the platform is missing a required attribute' do
       expect { described_class.new(platform_without_docker_image).validate_platform }.to raise_error(Vanagon::Error)
+      expect { described_class.new(platform_without_docker_arch).validate_platform }.to raise_error(Vanagon::Error)
     end
 
     it 'returns true if the platform has the required attributes' do
@@ -146,7 +160,8 @@ describe Vanagon::Engine::Docker do
       subject { described_class.new(platform_with_docker_image) }
 
       it 'starts a new docker instance' do
-        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --label vanagon=build --name debian_10-slim-builder   debian:10-slim tail -f /dev/null")
+        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker container ls --all --filter 'name=debian_10-slim-linux_amd64-builder' --format json")
+        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --label vanagon=build --name debian_10-slim-linux_amd64-builder --platform=linux/amd64   myregistry.io/debian:10-slim tail -f /dev/null")
 
         subject.select_target
       end

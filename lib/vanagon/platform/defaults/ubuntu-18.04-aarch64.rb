@@ -8,6 +8,7 @@ platform "ubuntu-18.04-aarch64" do |plat|
     autoconf
     build-essential
     cmake
+    curl
     debhelper
     devscripts
     fakeroot
@@ -19,6 +20,7 @@ platform "ubuntu-18.04-aarch64" do |plat|
     quilt
     rsync
     swig
+    systemd
     systemtap-sdt-dev
     zlib1g-dev
   )
@@ -26,4 +28,5 @@ platform "ubuntu-18.04-aarch64" do |plat|
   plat.install_build_dependencies_with "DEBIAN_FRONTEND=noninteractive; apt-get install -qy --no-install-recommends "
   plat.vmpooler_template "ubuntu-1804-arm64"
   plat.docker_image "ubuntu:18.04"
+  plat.docker_arch "linux/arm64"
 end

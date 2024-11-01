@@ -11,10 +11,14 @@ class Vanagon
 
         @docker_cmd = Vanagon::Utilities.find_program_on_path('docker')
         @required_attributes << "docker_image"
+        @required_attributes << "docker_arch"
+        @required_attributes << "docker_registry"
         if @platform.use_docker_exec
           @required_attributes.delete('ssh_port')
           @platform.docker_run_command = 'tail -f /dev/null' if @platform.docker_run_command.nil?
         end
+        exists = Vanagon::Utilities.ex("#{@docker_cmd} container ls --all --filter 'name=#{build_host_name}-builder' --format json")
+        teardown unless exists.nil? || exists.empty?
       end
 
       # Get the engine name
@@ -29,7 +33,7 @@ class Vanagon
           # Docker requires container names to match: [a-zA-Z0-9][a-zA-Z0-9_.-]
           # So, transform slashes and colons commonly used as separators in
           # image names.
-          @build_host_name = @platform.docker_image.gsub(%r{[/:]}, '_')
+          @build_host_name = "#{@platform.docker_image.gsub(%r{[/:]}, '_')}-#{@platform.docker_arch.gsub(%r{[/:]}, '_')}"
         end
 
         @build_host_name
@@ -42,7 +46,8 @@ class Vanagon
         ssh_args = @platform.use_docker_exec ? '' : "-p #{@target_port}:22"
         extra_args = @platform.docker_run_args.nil? ? [] : @platform.docker_run_args
 
-        Vanagon::Utilities.ex("#{@docker_cmd} run -d --label vanagon=build --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image} #{@platform.docker_run_command}")
+        # For SLES, we have to pull directly from the SLES registry
+        Vanagon::Utilities.ex("#{@docker_cmd} run -d --label vanagon=build --name #{build_host_name}-builder --platform=#{@platform.docker_arch} #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_registry}/#{@platform.docker_image} #{@platform.docker_run_command}")
 
         wait_for_ssh unless @platform.use_docker_exec
       rescue StandardError => e

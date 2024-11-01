@@ -10,4 +10,5 @@ platform "debian-8-amd64" do |plat|
   plat.install_build_dependencies_with "DEBIAN_FRONTEND=noninteractive; apt-get install -qy --no-install-recommends "
   plat.vmpooler_template "debian-8-x86_64"
   plat.docker_image "debian:8.11"
+  plat.docker_arch "linux/amd64"
 end

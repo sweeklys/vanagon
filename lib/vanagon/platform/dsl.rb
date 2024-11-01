@@ -319,6 +319,14 @@ class Vanagon
         @platform.docker_image = image_name
       end
 
+      def docker_arch(arch_name)
+        @platform.docker_arch = arch_name
+      end
+
+      def docker_registry(registry)
+        @platform.docker_registry = registry
+      end
+
       # Set additional `docker run` arguments to pass when creating containers
       #
       # @param args [Array<String>] array of CLI arguments for `docker run`

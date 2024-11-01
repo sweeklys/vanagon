@@ -3,13 +3,13 @@ platform 'el-8-ppc64le' do |plat|
   plat.defaultdir '/etc/sysconfig'
   plat.servicetype 'systemd'
 
-  # Workaround for an issue with RedHat subscription metadata, see ITSYS-2543
-  plat.provision_with('subscription-manager repos --disable rhel-8-for-ppc64le-baseos-rpms && subscription-manager repos --enable rhel-8-for-ppc64le-baseos-rpms')
-
   packages = %w(
     autoconf
     automake
     cmake
+    createrepo
+    curl
+    gcc
     gcc-c++
     java-1.8.0-openjdk-devel
     libarchive
@@ -18,13 +18,19 @@ platform 'el-8-ppc64le' do |plat|
     patch
     perl-Getopt-Long
     readline-devel
+    rpm-build
+    rpm-libs
+    rsync
     swig
+    systemd
     systemtap-sdt-devel
+    which
     zlib-devel
   )
 
   plat.provision_with("dnf install -y --allowerasing  #{packages.join(' ')}")
   plat.install_build_dependencies_with 'dnf install -y --allowerasing'
   plat.vmpooler_template 'redhat-8-power8'
-  plat.docker_image "redhat/ubi8:latest"
+  plat.docker_image "almalinux:8"
+  plat.docker_arch "linux/ppc64le"
 end
