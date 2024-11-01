@@ -11,7 +11,7 @@ require 'logger'
 class Vanagon
   class Driver
     include Vanagon::Utilities
-    attr_accessor :platform, :project, :target, :workdir, :remote_workdir, :verbose, :preserve
+    attr_accessor :platform, :project, :target, :workdir, :remote_workdir, :verbose, :preserve, :keepwork
 
     def timeout
       @timeout ||= @project.timeout || ENV["VANAGON_TIMEOUT"] || 7200
@@ -24,8 +24,9 @@ class Vanagon
     def initialize(platform, project, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
       @options = options
       @verbose = options[:verbose] || false
-      @preserve = options[:preserve] || false
+      @preserve = options[:preserve] || :'on-failure'
       @workdir = options[:workdir] || Dir.mktmpdir
+      @keepwork = options[:keepwork] || :never
 
       @@configdir = options[:configdir] || File.join(Dir.pwd, "configs")
       components = options[:components] || []
@@ -89,6 +90,7 @@ class Vanagon
     end
 
     def cleanup_workdir
+      VanagonLogger.info "cleanup workdir"
       FileUtils.rm_rf(workdir)
     end
 
@@ -155,12 +157,12 @@ class Vanagon
 
       if %i[never on-failure].include? @preserve
         @engine.teardown
-        cleanup_workdir
+        cleanup_workdir unless %i[always on-success].include? @keepwork
       end
     rescue StandardError => e
       if [:never].include? @preserve
         @engine.teardown
-        cleanup_workdir
+        cleanup_workdir unless %i[always on-failure].include? @keepwork
       end
       VanagonLogger.error(e)
       VanagonLogger.error e.backtrace.join("\n")

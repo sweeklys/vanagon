@@ -260,27 +260,25 @@ class Vanagon
     #   if #fetch is successful.
     def fetch_mirrors(options)
       mirrors.to_a.shuffle.each do |mirror|
-        begin
-          VanagonLogger.info %(Attempting to fetch from mirror URL "#{mirror}")
-          @source = Vanagon::Component::Source.source(mirror, **options)
-          return true if source.fetch
-        rescue Vanagon::InvalidSource
-          # This means that the URL was not a git repo or a valid downloadable file,
-          # which means either the URL is incorrect, or we don't have access to that
-          # resource. Return false, so that the pkg.url value can be used instead.
-          VanagonLogger.error %(Invalid source "#{mirror}")
-        rescue SocketError
-          # SocketError means that there was no DNS/name resolution
-          # for whatever remote protocol the mirror tried to use.
-          VanagonLogger.error %(Unable to resolve mirror URL "#{mirror}")
-        rescue StandardError
-          # Source retrieval does not consistently return a meaningful
-          # namespaced error message, which means we're brute-force rescuing
-          # StandardError. Also, we want to handle other unexpected things when
-          # we try reaching out to the URL, so that we can gracefully return
-          # false and fall back to fetching the pkg.url value instead.
-          VanagonLogger.error %(Unable to retrieve mirror URL "#{mirror}")
-        end
+        VanagonLogger.info %(Attempting to fetch from mirror URL "#{mirror}")
+        @source = Vanagon::Component::Source.source(mirror, **options)
+        return true if source.fetch
+      rescue Vanagon::InvalidSource
+        # This means that the URL was not a git repo or a valid downloadable file,
+        # which means either the URL is incorrect, or we don't have access to that
+        # resource. Return false, so that the pkg.url value can be used instead.
+        VanagonLogger.error %(Invalid source "#{mirror}")
+      rescue SocketError
+        # SocketError means that there was no DNS/name resolution
+        # for whatever remote protocol the mirror tried to use.
+        VanagonLogger.error %(Unable to resolve mirror URL "#{mirror}")
+      rescue StandardError
+        # Source retrieval does not consistently return a meaningful
+        # namespaced error message, which means we're brute-force rescuing
+        # StandardError. Also, we want to handle other unexpected things when
+        # we try reaching out to the URL, so that we can gracefully return
+        # false and fall back to fetching the pkg.url value instead.
+        VanagonLogger.error %(Unable to retrieve mirror URL "#{mirror}")
       end
       false
     end
@@ -317,10 +315,10 @@ class Vanagon
     def get_source(workdir) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
       opts = options.merge({ workdir: workdir, dirname: dirname })
       if url || !mirrors.empty?
-        if ENV['VANAGON_USE_MIRRORS'] == 'n' or ENV['VANAGON_USE_MIRRORS'] == 'false'
-          fetch_url(opts)
-        else
+        if %w[y yes true 1].include? ENV.fetch('VANAGON_USE_MIRRORS', 'n').downcase
           fetch_mirrors(opts) || fetch_url(opts)
+        else
+          fetch_url(opts)
         end
         source.verify
         extract_with << source.extract(platform.tar) if source.respond_to? :extract

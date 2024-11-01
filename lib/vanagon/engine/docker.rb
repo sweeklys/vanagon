@@ -11,7 +11,10 @@ class Vanagon
 
         @docker_cmd = Vanagon::Utilities.find_program_on_path('docker')
         @required_attributes << "docker_image"
-        @required_attributes.delete('ssh_port') if @platform.use_docker_exec
+        if @platform.use_docker_exec
+          @required_attributes.delete('ssh_port')
+          @platform.docker_run_command = 'tail -f /dev/null' if @platform.docker_run_command.nil?
+        end
       end
 
       # Get the engine name
@@ -35,22 +38,30 @@ class Vanagon
       # This method is used to obtain a vm to build upon using
       # a docker container.
       # @raise [Vanagon::Error] if a target cannot be obtained
-      def select_target
+      def select_target # rubocop:disable Metrics/AbcSize
         ssh_args = @platform.use_docker_exec ? '' : "-p #{@target_port}:22"
         extra_args = @platform.docker_run_args.nil? ? [] : @platform.docker_run_args
 
-        Vanagon::Utilities.ex("#{@docker_cmd} run -d --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image}")
-        @target = URI.parse('localhost')
+        Vanagon::Utilities.ex("#{@docker_cmd} run -d --label vanagon=build --name #{build_host_name}-builder #{ssh_args} #{extra_args.join(' ')} #{@platform.docker_image} #{@platform.docker_run_command}")
 
         wait_for_ssh unless @platform.use_docker_exec
       rescue StandardError => e
-        raise Vanagon::Error.wrap(e, "Something went wrong getting a target vm to build on using Docker.")
+        begin
+          raise e unless JSON.parse(Vanagon::Utilities.ex("#{@docker_cmd} container inspect #{build_host_name}-builder"))[0].dig('Config', 'Labels', 'vanagon') == 'build'
+          VanagonLogger.warn "reusing existing container!"
+        rescue StandardError
+          raise Vanagon::Error.wrap(e, "Something went wrong getting a target vm to build on using Docker.")
+        end
+      ensure
+        @target = URI.parse('localhost')
       end
 
       # This method is used to tell the vmpooler to delete the instance of the
       # vm that was being used so the pool can be replenished.
       def teardown
+        Vanagon::Driver.logger.info "Stopping #{build_host_name}-builder."
         Vanagon::Utilities.ex("#{@docker_cmd} stop #{build_host_name}-builder")
+        Vanagon::Driver.logger.info "Removing #{build_host_name}-builder."
         Vanagon::Utilities.ex("#{@docker_cmd} rm #{build_host_name}-builder")
       rescue Vanagon::Error => e
         VanagonLogger.error "There was a problem tearing down the docker container #{build_host_name}-builder (#{e.message})."
@@ -140,12 +151,10 @@ class Vanagon
       # @return [void]
       def wait_for_ssh
         Vanagon::Utilities.retry_with_timeout(5, 5) do
-          begin
-            Vanagon::Utilities.remote_ssh_command("#{@target_user}@#{@target}", 'exit', @target_port)
-          rescue StandardError => e
-            sleep(1) # Give SSHD some time to start.
-            raise e
-          end
+          Vanagon::Utilities.remote_ssh_command("#{@target_user}@#{@target}", 'exit', @target_port)
+        rescue StandardError => e
+          sleep(1) # Give SSHD some time to start.
+          raise e
         end
       rescue StandardError => e
         raise Vanagon::Error.wrap(e, "SSH was not up in the container after 5 seconds.")
