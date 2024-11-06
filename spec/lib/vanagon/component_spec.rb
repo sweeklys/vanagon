@@ -71,6 +71,7 @@ describe "Vanagon::Component" do
     end
 
     it "attempts to retrieve from a mirror before a canonical URI" do
+      allow(ENV).to receive(:fetch).with('VANAGON_USE_MIRRORS', 'n').and_return('y')
       allow(subject)
         .to receive(:fetch_url)
         .and_return(false)
@@ -86,6 +87,7 @@ describe "Vanagon::Component" do
     end
 
     it "retrieves from a canonical URI if mirrors are unavailable" do
+      allow(ENV).to receive(:fetch).with('VANAGON_USE_MIRRORS', 'n').and_return('y')
       allow(subject)
         .to receive(:fetch_url)
         .and_return(true)
@@ -98,7 +100,6 @@ describe "Vanagon::Component" do
     end
 
     it 'retrieves from a canonical URI if VANAGON_USE_MIRRORS is set to "n"' do
-      allow(ENV).to receive(:[]).with('VANAGON_USE_MIRRORS').and_return('n')
       allow(subject)
         .to receive(:fetch_url)
         .and_return(true)
@@ -110,7 +111,6 @@ describe "Vanagon::Component" do
     end
 
     it 'retrieves from a canonical URI if VANAGON_USE_MIRRORS is set to "false"' do
-      allow(ENV).to receive(:[]).with('VANAGON_USE_MIRRORS').and_return('false')
       allow(subject)
         .to receive(:fetch_url)
         .and_return(true)

@@ -120,7 +120,10 @@ class Vanagon
     # Docker engine specific
     attr_accessor :docker_image
     attr_accessor :docker_run_args
+    attr_accessor :docker_run_command
     attr_accessor :use_docker_exec
+    attr_accessor :docker_arch
+    attr_accessor :docker_registry
 
     # AWS engine specific
     attr_accessor :aws_ami
@@ -256,7 +259,8 @@ class Vanagon
       @copy ||= "cp"
       @shasum ||= "sha1sum"
 
-      @use_docker_exec = false
+      @use_docker_exec = true
+      @docker_registry ||= 'docker.io'
 
       # Our first attempt at defining metadata about a platform
       @cross_compiled ||= false

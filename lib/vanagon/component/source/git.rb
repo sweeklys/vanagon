@@ -39,7 +39,7 @@ class Vanagon
               #
               # Work around it by calling 'git ls-remote' directly ourselves.
               Timeout.timeout(timeout) do
-                Vanagon::Utilities.local_command("git ls-remote --heads #{url} > /dev/null 2>&1")
+                Vanagon::Utilities.local_command("git ls-remote --heads #{url} > /dev/null 2>&1", log: false)
                 $?.exitstatus.zero?
               end
             rescue RuntimeError
@@ -113,7 +113,12 @@ class Vanagon
         # and check out the ref. Also sets the version if there is a git tag as
         # a side effect.
         def fetch
-          clone!
+          begin
+            @clone ||= ::Git.open(File.join(workdir, dirname))
+            @clone.fetch
+          rescue ::Git::GitExecuteError, ArgumentError
+            clone!
+          end
           checkout!
           version
           update_submodules
