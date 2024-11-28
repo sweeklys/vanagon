@@ -144,7 +144,7 @@ class Vanagon
       #
       # @param ver [String] version of the project
       def version(ver)
-        @project.version = ver.tr('-', '.')
+        @project.version = ver
       end
 
       # Sets the release for the project. Mainly for use in packaging.
