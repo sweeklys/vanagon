@@ -56,7 +56,6 @@ class Vanagon
       # @param project [Vanagon::Project] project to name
       # @return [String] name of the debian package for this project
       def package_name(project)
-        require 'pry-byebug';binding.pry
         "#{project.name}_#{project.version}-#{project.release}#{dist}_#{project.noarch ? 'all' : @architecture}.deb"
       end
 
@@ -65,7 +64,6 @@ class Vanagon
       #
       # @return [String] relative path to where debian packages should be staged
       def output_dir(target_repo = "")
-        require 'pry-byebug';binding.pry
         @output_dir ||= File.join("deb", @platform.dist, target_repo)
       end
 
