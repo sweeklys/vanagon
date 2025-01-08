@@ -3,6 +3,7 @@ require 'vanagon/logger'
 require 'vanagon/component/source/local'
 require 'net/http'
 require 'uri'
+require 'vanagon/errors'
 
 class Vanagon
   class Component
@@ -34,7 +35,7 @@ class Vanagon
               when Net::HTTPSuccess
                 true
               else
-                false
+                raise "Error contacting #{target_url}. Ensure this URL is correct."
               end
             end
           end
