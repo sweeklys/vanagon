@@ -56,7 +56,7 @@ class Vanagon
       # @param project [Vanagon::Project] project to name
       # @return [String] name of the debian package for this project
       def package_name(project)
-        "#{project.name}_#{project.version}-#{project.release}#{dist}_#{project.noarch ? 'all' : @architecture}.deb"
+        "#{project.name}-#{project.version}-#{project.release}+#{project.platform.os_name}#{project.platform.os_version}_#{project.noarch ? 'all' : @architecture}.deb"
       end
 
       # Get the expected output dir for the debian packages. This allows us to
@@ -64,7 +64,7 @@ class Vanagon
       #
       # @return [String] relative path to where debian packages should be staged
       def output_dir(target_repo = "")
-        @output_dir ||= File.join("deb", @platform.dist, target_repo)
+        @output_dir ||= File.join("deb", os_name + os_version, target_repo)
       end
 
       # Returns the string to add a target repo to the platforms' provisioning
