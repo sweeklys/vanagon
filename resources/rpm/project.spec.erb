@@ -396,5 +396,5 @@ fi
 <%- end -%>
 
 %changelog
-* <%= Time.now.strftime("%a %b %d %Y") %> <%= @vendor %> -  <%= @version %>-<%= @release %>
+* <%= Time.at(ENV['SOURCE_DATE_EPOCH'].to_i).strftime("%a %b %d %Y") %> <%= @vendor %> -  <%= @version %>-<%= @release %>
 - Build for <%= @version %>-<%= @release %>
