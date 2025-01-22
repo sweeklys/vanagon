@@ -5,7 +5,7 @@ ARCH=<%= @noarch ? 'all' : @platform.architecture %>
 CLASSES=none
 CATEGORY=application
 VENDOR=<%= @vendor %>
-PSTAMP=<%= Time.at(@source_date_epcoh).utc.strftime('%Y-%m-%d.%H%M%S') %>
+PSTAMP=<%= Time.at(@source_date_epoch).utc.strftime('%Y-%m-%d.%H%M%S') %>
 EMAIL=<%= vendor_email_only %>
 ISTATES=S s 1 2 3
 RSTATES=S s 1 2 3
