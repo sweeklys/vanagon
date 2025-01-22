@@ -4,36 +4,54 @@ require 'vanagon/platform'
 describe Vanagon::Engine::Docker do
   before(:each) do
     allow(Vanagon::Utilities).to receive(:find_program_on_path).with('docker').and_return('/usr/bin/docker')
+    allow(Vanagon::Utilities).to receive(:ex).with(/\/usr\/bin\/docker container ls/).and_return('')
   end
 
   let (:platform_with_docker_image) do
     plat = Vanagon::Platform::DSL.new('debian-10-amd64')
-    plat.instance_eval(<<~EOF)
+    plat_text = <<~EOF
       platform 'debian-10-amd64' do |plat|
         plat.docker_image 'debian:10-slim'
         plat.docker_arch 'linux/amd64'
         plat.docker_registry 'myregistry.io'
       end
     EOF
+    plat.instance_eval(plat_text)
+      
     plat._platform
   end
 
   let (:platform_without_docker_image) do
     plat = Vanagon::Platform::DSL.new('debian-10-amd64')
-    plat.instance_eval(<<~EOF)
+    plat_text = <<~EOF
       platform 'debian-10-amd64' do |plat|
       end
     EOF
+    plat.instance_eval(plat_text)
+      
     plat._platform
   end
 
   let (:platform_without_docker_arch) do
     plat = Vanagon::Platform::DSL.new('debian-10-amd64')
-    plat.instance_eval(<<~EOF)
+    plat_text = <<~EOF
       platform 'debian-10-amd64' do |plat|
         plat.docker_image 'debian:10-slim'
       end
     EOF
+    plat.instance_eval(plat_text)
+    plat._platform
+  end
+
+  let (:platform_without_docker_registry) do
+    plat = Vanagon::Platform::DSL.new('debian-10-amd64')
+    plat_text = <<~EOF
+      platform 'debian-10-amd64' do |plat|
+        plat.docker_image 'debian:10-slim'
+        plat.docker_arch 'linux/amd64'
+      end
+    EOF
+    plat.instance_eval(plat_text)
     plat._platform
   end
 
@@ -160,7 +178,6 @@ describe Vanagon::Engine::Docker do
       subject { described_class.new(platform_with_docker_image) }
 
       it 'starts a new docker instance' do
-        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker container ls --all --filter 'name=debian_10-slim-linux_amd64-builder' --format json")
         expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --label vanagon=build --name debian_10-slim-linux_amd64-builder --platform=linux/amd64   myregistry.io/debian:10-slim tail -f /dev/null")
 
         subject.select_target
@@ -174,6 +191,16 @@ describe Vanagon::Engine::Docker do
         uri = subject.target
         expect(uri).to be_an_instance_of(URI::Generic)
         expect(uri.path).to eq('localhost')
+      end
+    end
+
+    context 'when platform without registry defined' do
+      subject { described_class.new(platform_without_docker_registry) }
+
+      it 'starts a new docker instance with docker.io registry default' do
+        expect(Vanagon::Utilities).to receive(:ex).with("/usr/bin/docker run -d --label vanagon=build --name debian_10-slim-linux_amd64-builder --platform=linux/amd64   docker.io/debian:10-slim tail -f /dev/null")
+
+        subject.select_target
       end
     end
   end

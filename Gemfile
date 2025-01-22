@@ -26,6 +26,7 @@ group(:development, :test) do
   gem 'json'
   gem 'lock_manager', *location_for(ENV['LOCK_MANAGER_LOCATION'] || '>= 0')
   gem 'packaging', *location_for(ENV['PACKAGING_LOCATION'] || '~> 0.99')
+  gem 'pry-byebug', require: false
   gem 'rake', require: false
   gem 'rspec', '~> 3.0', require: false
   gem 'rubocop', '~> 1.0', require: false

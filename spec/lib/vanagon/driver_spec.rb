@@ -107,14 +107,17 @@ describe 'Vanagon::Driver' do
     end
 
     it 'returns the docker_image using the docker engine' do
-      platform = eval_platform('el-7-x86_64', <<-END)
+      platform_text = <<-END
         platform 'el-7-x86_64' do |plat|
           plat.docker_image 'centos7'
           plat.docker_arch 'linux/amd64'
         end
       END
+      platform = eval_platform('el-7-x86_64', platform_text)
+        
 
       expect(Vanagon::Utilities).to receive(:find_program_on_path).with('docker').and_return('/usr/bin/docker')
+      expect(Vanagon::Utilities).to receive(:ex).with(/\/usr\/bin\/docker container ls/).and_return('')
       info = create_driver(platform, :engine => 'docker').build_host_info
 
       expect(info).to match({ 'name'   => 'centos7-linux_amd64',
