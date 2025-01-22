@@ -6,6 +6,7 @@ require 'vanagon/project/dsl'
 require 'vanagon/utilities'
 require 'digest'
 require 'ostruct'
+require 'time'
 
 # Used to parse the vendor field into name and email
 VENDOR_REGEX = /^(.*) <(.*)>$/.freeze
@@ -117,6 +118,9 @@ class Vanagon
     attr_accessor :signing_username
     attr_accessor :signing_command
 
+    # For creating reproducible builds
+    attr_accessor :source_date_epoch
+
     # Loads a given project from the configdir
     #
     # @param name [String] the name of the project
@@ -169,6 +173,7 @@ class Vanagon
       @signing_hostname = ''
       @signing_username = ''
       @signing_command = ''
+      @source_date_epoch = (ENV['SOURCE_DATE_EPOCH'] || Time.now.utc).to_i
     end
 
     # Magic getter to retrieve settings in the project

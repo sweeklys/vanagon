@@ -105,7 +105,7 @@ class Vanagon
       # Execute a command on a container via docker exec
       def docker_exec(command, return_output = false)
         command = command.gsub("'", "'\\\\''")
-        Vanagon::Utilities.local_command("#{@docker_cmd} exec -e SOURCE_DATE_EPOCH=#{ENV['SOURCE_DATE_EPOCH']} #{build_host_name}-builder /bin/sh -c '#{command}'",
+        Vanagon::Utilities.local_command("#{@docker_cmd} exec #{build_host_name}-builder /bin/sh -c '#{command}'",
                                          return_command_output: return_output)
       end
 
