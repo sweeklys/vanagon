@@ -23,6 +23,8 @@ override_dh_auto_install:
 	cp -Rp <%= file %> debian/tmp/<%= File.dirname(file) %>
 <%- end -%>
 
+override_dh_perl:
+
 override_dh_shlibdeps:
 
 override_dh_usrlocal:
