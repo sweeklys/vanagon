@@ -25,6 +25,7 @@ platform 'fedora-41-aarch64' do |plat|
       rsync
       swig
       systemtap-sdt-devel
+      systemtap-sdt-dtrace
       systemd
       which
       zlib-devel
