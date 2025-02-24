@@ -151,7 +151,7 @@ class Vanagon
       @project.generate_packaging_artifacts(workdir) unless @project.no_packaging
       @project.save_manifest_json(@platform, workdir)
       @engine.ship_workdir(workdir)
-      @engine.dispatch("(cd #{@engine.remote_workdir}; #{@platform.make} #{make_target})")
+      @engine.dispatch("(export SOURCE_DATE_EPOCH=#{@project.source_date_epoch}; cd #{@engine.remote_workdir}; #{@platform.make} #{make_target})")
       @engine.retrieve_built_artifact(@project.artifacts_to_fetch, @project.no_packaging)
       @project.publish_yaml_settings(@platform)
 

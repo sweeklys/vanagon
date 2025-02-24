@@ -3,6 +3,7 @@ require 'vanagon/logger'
 require 'vanagon/patch'
 require 'ostruct'
 require 'json'
+require 'time'
 
 class Vanagon
   class Component
@@ -192,8 +193,11 @@ class Vanagon
           target_mode = '0644'
           default_mode = '0644'
         when "smf"
+          # A little awkward to do this here since it's defined at the project level, but
+          # this is the only place we need it in here.
+          source_date_epoch = (ENV['SOURCE_DATE_EPOCH'] || Time.now.utc).to_i
           # modify version in smf manifest so service gets restarted after package upgrade
-          @component.install << %{#{@component.platform.sed} -ri 's/(<service.*version=)(".*")/\\1"#{Time.now.to_i}"/' #{service_file}}
+          @component.install << %{#{@component.platform.sed} -ri 's/(<service.*version=)(".*")/\\1"#{source_date_epoch}"/' #{service_file}}
           target_service_file = File.join(servicedir, options[:service_type].to_s, "#{service_name}.xml")
           target_default_file = File.join(@component.platform.defaultdir, service_name)
           target_mode = '0644'
