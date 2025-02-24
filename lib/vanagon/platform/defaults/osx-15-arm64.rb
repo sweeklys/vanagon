@@ -1,4 +1,4 @@
-platform 'osx-14-arm64' do |plat|
+platform 'osx-15-arm64' do |plat|
     plat.brew '/opt/homebrew/bin/brew'
     plat.servicetype 'launchd'
     plat.servicedir '/Library/LaunchDaemons'
@@ -20,5 +20,5 @@ platform 'osx-14-arm64' do |plat|
     plat.provision_with 'cd /etc/homebrew'
     plat.provision_with 'createhomedir -c -u test'
     plat.provision_with 'su test -c \'echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"\''
-    plat.vmpooler_template 'macos-14-arm64'
+    plat.vmpooler_template 'macos-15-arm64'
   end
