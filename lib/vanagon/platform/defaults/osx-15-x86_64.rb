@@ -1,4 +1,4 @@
-platform "osx-14-x86_64" do |plat|
+platform "osx-15-x86_64" do |plat|
   plat.servicetype "launchd"
   plat.servicedir "/Library/LaunchDaemons"
   plat.codename "sequoia"
@@ -19,5 +19,5 @@ platform "osx-14-x86_64" do |plat|
   plat.provision_with "cd /etc/homebrew"
   plat.provision_with "createhomedir -c -u test"
   plat.provision_with %Q(su test -c 'echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"')
-  plat.vmpooler_template "macos-14-x86_64"
+  plat.vmpooler_template "macos-15-x86_64"
 end
