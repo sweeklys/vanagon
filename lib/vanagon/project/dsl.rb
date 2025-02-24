@@ -194,7 +194,7 @@ class Vanagon
       # and reachable from the current commit in that repository.
       #
       def version_from_git
-        git_version = Git.open(File.expand_path("..", @configdir)).describe('HEAD', tags: true)
+        git_version = Git.open(File.expand_path("..", @configdir)).describe('HEAD', tags: true, abbrev: 9)
         version(git_version.split('-').reject(&:empty?).join('.'))
       rescue Git::GitExecuteError
         VanagonLogger.error "Directory '#{File.expand_path('..', @configdir)}' cannot be versioned by git. Maybe it hasn't been tagged yet?"
