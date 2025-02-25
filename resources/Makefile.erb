@@ -5,7 +5,7 @@ export <%= var %>
 <%- end -%>
 
 tempdir := $(shell <%= @platform.mktemp %> 2>/dev/null)
-workdir := $(PWD)
+workdir := $(shell pwd)
 
 all: file-list-before-build <%= package_name %>
 
