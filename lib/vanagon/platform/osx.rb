@@ -8,7 +8,9 @@ class Vanagon
       # @return [String] a command to install all of the build dependencies
       def install_build_dependencies(list_build_dependencies)
         <<-HERE.undent
-          #{@brew} install #{list_build_dependencies.join(' ')}
+          mkdir -p /etc/homebrew
+          cd /etc/homebrew
+          su test -c '#{@brew} install #{list_build_dependencies.join(' ')}'
         HERE
       end
 
