@@ -126,7 +126,9 @@ class Vanagon
       def process_templates(wixworkdir, binding)
         files = Dir.glob(File.join(wixworkdir, "**/*.erb"))
         files.each do |file|
-          erb_file(file, File.join(File.dirname(file), File.basename(file, ".erb")), false, { :binding => binding })
+          if @settings[:exclude_wix_templates].nil? || !@settings[:exclude_wix_templates].include?(File.basename(file))
+            erb_file(file, File.join(File.dirname(file), File.basename(file, ".erb")), false, { :binding => binding })
+          end
           FileUtils.rm(file)
         end
       end
