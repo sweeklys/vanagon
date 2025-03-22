@@ -196,7 +196,10 @@ class Vanagon
         app_heat_flags = " -dr INSTALLDIR -v -ke -indent 2 -cg AppComponentGroup -gg -srd -t wix/filter.xslt -sreg -var var.AppSourcePath "
         app_heat_flags += " -fips" if project.platform.is_windows? && project.platform.is_fips?
 
-        app_source_path = "SourceDir/#{project.settings[:base_dir]}/#{project.settings[:company_id]}/#{project.settings[:product_id]}"
+        # Use PuppetLabs/Puppet if specified
+        company_id = project.settings[:pl_company_id] || project.settings[:company_id]
+        product_id = project.settings[:pl_product_id] || project.settings[:product_id]
+        app_source_path = "SourceDir/#{project.settings[:base_dir]}/#{company_id}/#{product_id}"
         # Candle.exe preprocessor vars are required due to the above double run of heat.exe, both runs of heat use
         # preprocessor variables
         candle_preprocessor = "-dAppSourcePath=\"#{app_source_path}\" "
@@ -207,7 +210,7 @@ class Vanagon
         # localisation flags to be added
         light_flags = "-v -cultures:en-us #{wix_extensions}"
         # "Misc Dir for versions.txt, License file and Icon file"
-        misc_dir = "SourceDir/#{project.settings[:base_dir]}/#{project.settings[:company_id]}/#{project.settings[:product_id]}/misc"
+        misc_dir = "SourceDir/#{project.settings[:base_dir]}/#{company_id}/#{product_id}/misc"
         # Actual array of commands to be written to the Makefile
         make_commands = [
           "mkdir -p output/#{target_dir}",
@@ -402,7 +405,9 @@ class Vanagon
       # @param [@project] project object
       def strip_and_format_path(path, project)
         formatted_path = path.tr('\\', '\/')
-        path_regex = /\/?SourceDir\/#{project.settings[:base_dir]}\/#{project.settings[:company_id]}\/#{project.settings[:product_id]}\//
+        company_id = project.settings[:pl_company_id] || project.settings[:company_id]
+        product_id = project.settings[:pl_product_id] || project.settings[:product_id]
+        path_regex = /\/?SourceDir\/#{project.settings[:base_dir]}\/#{company_id}\/#{product_id}\//
         File.dirname(formatted_path.sub(path_regex, ''))
       end
 

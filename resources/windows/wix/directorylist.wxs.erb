@@ -3,8 +3,8 @@
   <Fragment>
     <DirectoryRef Id='TARGETDIR'>
       <Directory Id="<%= settings[:base_dir] %>" >
-        <Directory Id="<%= settings[:company_id] %>" Name="<%= settings[:company_name] %>">
-          <Directory Id='INSTALLDIR' Name="<%= settings[:product_id] %>">
+        <Directory Id="<%= settings[:pl_company_id] || settings[:company_id] %>" Name="<%= settings[:pl_company_name] || settings[:company_name] %>">
+          <Directory Id='INSTALLDIR' Name="<%= settings[:pl_product_id] || settings[:product_id] %>">
           <%= @platform.generate_service_bin_dirs(self.get_services, self) %>
           </Directory>
         </Directory>

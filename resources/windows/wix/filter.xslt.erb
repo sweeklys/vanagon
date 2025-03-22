@@ -21,7 +21,7 @@
   <%- service_files = Array.new -%>
   <%- get_services.each do |service| -%>
 
-    <%- service_files << service.service_file.sub("SourceDir\\#{self.settings[:base_dir]}\\#{self.settings[:company_id]}\\#{self.settings[:product_id]}", "$(var.AppSourcePath)") -%>
+    <%- service_files << service.service_file.sub("SourceDir\\#{self.settings[:base_dir]}\\#{self.settings[:pl_company_id] || self.settings[:company_id]}\\#{self.settings[:pl_product_id] || self.settings[:product_id]}", "$(var.AppSourcePath)") -%>
   <%- end -%>
   <%- service_files.uniq.each do |service_file| -%>
     <xsl:template match="wix:Component[wix:File[@Source='<%= service_file %>']]" />
