@@ -180,7 +180,7 @@ class Vanagon
       #
       # @param project [Vanagon::Project] project to build a msi package of
       # @return [Array] list of commands required to build an msi package for the given project from a tarball
-      def generate_msi_package(project) # rubocop:disable Metrics/AbcSize
+      def generate_msi_package(project) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
         target_dir = project.repo ? output_dir(project.repo) : output_dir
         wix_extensions = "-ext WiXUtilExtension -ext WixUIExtension"
         # Heat command documentation at: http://wixtoolset.org/documentation/manual/v3/overview/heat.html
