@@ -618,9 +618,6 @@ Style/MultilineIfThen:
 Style/MultilineInPatternThen:
   Enabled: true
 
-Style/MultilineTernaryOperator:
-  Enabled: true
-
 Style/NegatedIf:
   Enabled: true
 
@@ -808,4 +805,10 @@ Style/WhileUntilModifier:
   Enabled: false
 
 Style/WordArray:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+Style/MultilineTernaryOperator:
   Enabled: false
