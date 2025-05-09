@@ -111,12 +111,11 @@ class Vanagon
     attr_accessor :no_packaging
 
     # Extra files to sign
-    # Right now just supported on windows, useful for signing powershell scripts
-    # that need to be signed between build and MSI creation
     attr_accessor :extra_files_to_sign
     attr_accessor :signing_hostname
     attr_accessor :signing_username
-    attr_accessor :signing_command
+    attr_accessor :signing_commands
+    attr_accessor :use_local_signing
 
     # For creating reproducible builds
     attr_accessor :source_date_epoch
@@ -172,7 +171,8 @@ class Vanagon
       @extra_files_to_sign = []
       @signing_hostname = ''
       @signing_username = ''
-      @signing_command = ''
+      @signing_commands = []
+      @use_local_signing = false
       @source_date_epoch = (ENV['SOURCE_DATE_EPOCH'] || Time.now.utc).to_i
     end
 

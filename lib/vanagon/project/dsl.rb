@@ -395,7 +395,15 @@ class Vanagon
       #
       # @param [String] the command to sign additional files
       def signing_command(command)
-        @project.signing_command = command
+        @project.signing_commands << command
+      end
+
+      # When true, run the signing commands locally rather than SSHing to a
+      # signing host.
+      #
+      # @param [Boolean] Whether to use local signing
+      def use_local_signing(var)
+        @project.use_local_signing = var
       end
     end
   end
