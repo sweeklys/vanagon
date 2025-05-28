@@ -69,10 +69,6 @@ class Vanagon
           # URLs that incorrectly respond to git queries
           timeout = 5
           if Vanagon::Component::Source::Git.valid_remote?(uri, timeout)
-            if uri =~ /^http/
-              VanagonLogger.warn "Using http(s) URIs for github is deprecated. " \
-                                 "Use `git:` URI scheme instead."
-            end
             return :git
           end
 
