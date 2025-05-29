@@ -19,3 +19,6 @@ vanagon_hosts.log
 
 .yardoc/
 doc/
+
+/vendor/
+/.vendor/
