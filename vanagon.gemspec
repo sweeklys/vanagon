@@ -13,12 +13,12 @@ Gem::Specification.new do |gem|
   DESCRIPTION
   gem.license = 'Apache-2.0'
 
-  gem.authors  = ['Puppet By Perforce']
-  gem.email    = 'release@puppet.com'
-  gem.homepage = 'http://github.com/puppetlabs/vanagon'
+  gem.authors  = ['Puppet By Perforce', 'OpenVoxProjec']
+  gem.email    = 'voxpupuli@groups.io'
+  gem.homepage = 'http://github.com/OpenVoxProject/vanagon'
   gem.required_ruby_version = ['>= 2.7', '< 4']
 
-  gem.add_dependency('docopt')
+  gem.add_dependency('docopt', '~> 0.6.1')
   # Handle git repos responsibly
   # - MIT licensed: https://rubygems.org/gems/git
   gem.add_dependency('git', '>= 1.13', '< 4')
@@ -27,11 +27,11 @@ Gem::Specification.new do |gem|
   gem.add_dependency('build-uri', '~> 1.0')
   # Handle locking hardware resources
   # - ASL v2 licensed: https://rubygems.org/gems/lock_manager
-  gem.add_dependency('lock_manager', '>= 0')
+  gem.add_dependency('lock_manager', '~> 0.1.5')
   # Utilities for `ship` and `repo` commands
   # - ASL v2 licensed: https://rubygems.org/gems/packaging
-  gem.add_dependency('packaging')
-  gem.add_dependency('psych', '>= 4.0')
+  gem.add_dependency('packaging', '~> 0.122.3')
+  gem.add_dependency('psych', '>= 4.0', '< 6')
 
   gem.require_path = 'lib'
   gem.bindir       = 'bin'
