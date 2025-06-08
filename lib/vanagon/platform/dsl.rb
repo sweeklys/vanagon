@@ -5,6 +5,7 @@ require 'vanagon/platform/rpm/sles'
 require 'vanagon/platform/rpm/wrl'
 require 'vanagon/platform/rpm/eos'
 require 'vanagon/platform/osx'
+require 'vanagon/platform/smartos'
 require 'vanagon/platform/solaris_10'
 require 'vanagon/platform/solaris_11'
 require 'vanagon/platform/windows'
@@ -52,6 +53,8 @@ class Vanagon
                       Vanagon::Platform::Solaris10.new(@name)
                     when /^solaris-11/
                       Vanagon::Platform::Solaris11.new(@name)
+                    when /^smartos/
+                      Vanagon::Platform::Smartos.new(@name)
                     when /^windows/
                       Vanagon::Platform::Windows.new(@name)
                     else
