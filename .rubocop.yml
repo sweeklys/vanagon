@@ -1,6 +1,6 @@
 ---
 
-require:
+plugins:
 - rubocop-rake
 - rubocop-rspec
 
@@ -360,7 +360,10 @@ Naming/MethodName:
 Naming/MethodParameterName:
   Enabled: false
 
-Naming/PredicateName:
+Naming/PredicateMethod:
+  Enabled: false
+
+Naming/PredicatePrefix:
   Enabled: false
 
 Naming/RescuedExceptionsVariableName:
