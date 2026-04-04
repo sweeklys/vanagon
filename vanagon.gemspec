@@ -29,7 +29,6 @@ Gem::Specification.new do |gem|
   # Utilities for `ship` and `repo` commands
   # - ASL v2 licensed: https://rubygems.org/gems/packaging
   gem.add_dependency('packaging', '~> 0.122.3')
-  gem.add_dependency('psych', '>= 4.0', '< 6')
 
   gem.add_dependency('ostruct', '< 0.7')
 
