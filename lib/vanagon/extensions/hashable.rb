@@ -7,8 +7,8 @@ module HashableAttributes
   # @return [Hash] Converts an object to a hash with keys representing
   #   each attribute (as symbols) and their corresponding values
   def to_hash
-    instance_variables.each_with_object({}) do |var, hash|
-      hash[var.to_s.delete("@")] = instance_variable_get(var)
+    instance_variables.to_h do |var|
+      [var.to_s.delete("@"), instance_variable_get(var)]
     end
   end
   alias_method :to_h, :to_hash
