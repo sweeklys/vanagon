@@ -666,6 +666,13 @@ Style/NumericLiterals:
 Style/ObjectThen:
   Enabled: true
 
+# Extensions to other Ruby libraries purposefully declare
+# multiple classes.
+Style/OneClassPerFile:
+  Exclude:
+    - lib/git/*
+    - lib/vanagon/extensions/**/*
+
 Style/OneLineConditional:
   Enabled: true
 

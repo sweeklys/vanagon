@@ -225,7 +225,7 @@ class Vanagon
       # Generate a Makefile fragment that contains all of the rules for the component.
       # @return [String]
       def format
-        rules.map(&:to_s).join("\n")
+        rules.join("\n")
       end
 
       alias to_s format
